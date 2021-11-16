@@ -1,4 +1,4 @@
-package eCommerceSystem;
+package eCommerceSystem.entities.concretes;
 
 public class User {
 	private int id;

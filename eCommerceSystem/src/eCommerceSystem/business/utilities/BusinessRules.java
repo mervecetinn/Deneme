@@ -1,4 +1,4 @@
-package eCommerceSystem;
+package eCommerceSystem.business.utilities;
 
 public class BusinessRules {
 	

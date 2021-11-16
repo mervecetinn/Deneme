@@ -1,4 +1,9 @@
-package eCommerceSystem;
+package eCommerceSystem.business.concretes;
+
+import eCommerceSystem.business.abstracts.UserService;
+import eCommerceSystem.business.utilities.BusinessRules;
+import eCommerceSystem.dataAccess.abstracts.UserDao;
+import eCommerceSystem.entities.concretes.User;
 
 public class UserManager implements UserService {
 
@@ -16,21 +21,24 @@ public class UserManager implements UserService {
 
 		if (result != false) {
 			userDao.save(user);
-		} else {
-			System.out.println("Hata");
-		}
+		} 
 	}
 
 	private boolean checkPasswordLength(String password) {
 		if (password.length() >= 6) {
 			return true;
 		}
+		System.out.println("Şifre en az 6 karakterden oluşmalı!");
 		return false;
 	}
 
 	private boolean checkIfEmailExists(String email) {
-		if (userDao.getByEmail(email) != null) {
-			return false;
+		var result=userDao.getAll();
+		for(User user:result) {
+			if(user.getEmail()==email) {
+				System.out.println("Email sistemde mevcut!");
+				return false;
+			}
 		}
 		return true;
 	}
@@ -39,6 +47,7 @@ public class UserManager implements UserService {
 		if (firstName.length() >= 2 && lastName.length() >= 2) {
 			return true;
 		}
+		System.out.println("Ad-soyad en az 2 karakterden oluşmalı!");
 		return false;
 	}
 
@@ -47,6 +56,7 @@ public class UserManager implements UserService {
 		if (email.matches(pattern)) {
 			return true;
 		}
+		System.out.println("Geçersiz email!");
 		return false;
 
 	}
