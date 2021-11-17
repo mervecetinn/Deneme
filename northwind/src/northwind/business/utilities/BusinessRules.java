@@ -1,13 +1,15 @@
 package northwind.business.utilities;
 
+import northwind.core.utilities.results.Result;
+
 public class BusinessRules {
-   public static boolean run(boolean... logics) {
-	   for(boolean logic:logics) {
-		   if(logic==false) {
-			   return false;
+   public static Result run(Result... logics) {
+	   for(Result logic:logics) {
+		   if(!logic.isSuccess()) {
+			   return logic;
 		   }
 	   }
-	   return true;
+	   return null;
 	   
    }
 }

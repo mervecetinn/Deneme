@@ -4,6 +4,11 @@ import java.util.List;
 
 import northwind.business.abstracts.ProductService;
 import northwind.business.utilities.BusinessRules;
+import northwind.core.utilities.results.DataResult;
+import northwind.core.utilities.results.ErrorResult;
+import northwind.core.utilities.results.Result;
+import northwind.core.utilities.results.SuccessDataResult;
+import northwind.core.utilities.results.SuccessResult;
 import northwind.dataAccess.abstracts.ProductRepository;
 import northwind.entities.concretes.Product;
 
@@ -16,39 +21,41 @@ public class ProductManager implements ProductService {
 	}
 
 	@Override
-	public List<Product> getAll() {
-		return this.productRepository.getAll();
+	public DataResult<List<Product>> getAll() {
+		return new SuccessDataResult<List<Product>>(this.productRepository.getAll());
 	}
 
 	@Override
-	public void add(Product product) {
+	public Result add(Product product) {
 
 		var result = BusinessRules.run(checkProductPrice(product.getUnitPrice()), checkCategoryId(product),
 				checkProductCountOfCategory(product), checkProductNameExists(product.getProductName()));
 		
-		if(result!=false) {
+		if(result==null) {
 			productRepository.add(product);
+			return new SuccessResult("Ürün eklendi.");
+		}
+		else {
+			return new ErrorResult("Ürün eklenemedi");
 		}
 	}
 
-	private boolean checkProductPrice(double unitPrice) {
+	private Result checkProductPrice(double unitPrice) {
 		if (unitPrice < 0) {
-			System.out.println("Fiyat - olamaz!");
-			return false;
+			return new ErrorResult("Fiyat - olamaz!");
 		}
-		return true;
+		return new SuccessResult();
 	}
 
-	private boolean checkCategoryId(Product product) {
+	private Result checkCategoryId(Product product) {
 		if (product.getCategoryId() == 3 && product.getUnitPrice() < 10) {
-			System.out.println("3. kategorideki ürünlerin fiyatı 10 dan küçük olamaz");
-			return false;
+			return new ErrorResult("3. kategorideki ürünlerin fiyatı 10 dan küçük olamaz");
 		} 
-		return true;
+		return new SuccessResult();
 
 	}
 
-	private boolean checkProductCountOfCategory(Product product) {
+	private Result checkProductCountOfCategory(Product product) {
 		var result = productRepository.getAll();
 		int count = 0;
 		for (Product p : result) {
@@ -57,23 +64,21 @@ public class ProductManager implements ProductService {
 			}
 		}
 		if (count >= 5) {
-			System.out.println("Aynı kategoride 5 den fazla ürün olamaz!");
-			return false;
+			return new ErrorResult("Aynı kategoride 5 den fazla ürün olamaz!");
 		}
-		return true;
+		return new SuccessResult();
 
 	}
 
-	private boolean checkProductNameExists(String productName) {
+	private Result checkProductNameExists(String productName) {
 		var result = productRepository.getAll();
 		for (Product product : result) {
 			if (product.getProductName() == productName) {
-				System.out.println("Aynı isimde ürün eklenemez!");
-				return false;
+				return new ErrorResult("Aynı isimde ürün eklenemez!");
 			}
 
 		}
-		return true;
+		return new SuccessResult();
 	}
 
 }

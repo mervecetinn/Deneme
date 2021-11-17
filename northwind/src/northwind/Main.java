@@ -21,7 +21,7 @@ public class Main {
 	        productService.add(new Product(9,2,"Karpuz",28));
 	       
 
-	        for(Product product : productService.getAll()) {
+	        for(Product product : productService.getAll().getData()) {
 	            System.out.println(product.getProductName());
 
 	        }
